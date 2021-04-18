@@ -15,15 +15,14 @@
  */
 package org.springframework.samples.petclinic.owner;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.samples.petclinic.visit.VisitRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
@@ -43,11 +42,24 @@ class OwnerController {
 
 	private final OwnerRepository owners;
 
+	private final ApplicationContext applicationContext;
+
+	@Autowired
+	private PetRepository petRepository;
+
 	private VisitRepository visits;
 
-	public OwnerController(OwnerRepository clinicService, VisitRepository visits) {
+	public OwnerController(OwnerRepository clinicService, ApplicationContext applicationContext, VisitRepository visits) {
 		this.owners = clinicService;
+		this.applicationContext = applicationContext;
 		this.visits = visits;
+	}
+
+	@GetMapping("/bean")
+	@ResponseBody // 리턴 문자열 자체를 본문으로 받는 어노테이션
+	public String bean() {
+		return "bean : " + applicationContext.getBean(OwnerController.class)
+			+ "owners : " + this.owners;
 	}
 
 	@InitBinder
